@@ -1,0 +1,44 @@
+<%- model_class = Vocabulary -%>
+<div class="page-header">
+  <h1><%=t '.title', :default => model_class.model_name.human.pluralize.titleize %></h1>
+</div>
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th><%= model_class.human_attribute_name(:id) %></th>
+      <th><%= model_class.human_attribute_name(:name) %></th>
+      <th><%= model_class.human_attribute_name(:definition) %></th>
+      <th><%= model_class.human_attribute_name(:example) %></th>
+      <th><%= model_class.human_attribute_name(:url) %></th>
+      <th><%= model_class.human_attribute_name(:confirmed) %></th>
+      <th><%= model_class.human_attribute_name(:created_at) %></th>
+      <th><%=t '.actions', :default => t("helpers.actions") %></th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @vocabularies.each do |vocabulary| %>
+      <tr>
+        <td><%= link_to vocabulary.id, vocabulary_path(vocabulary) %></td>
+        <td><%= vocabulary.name %></td>
+        <td><%= vocabulary.definition %></td>
+        <td><%= vocabulary.example %></td>
+        <td><%= vocabulary.url %></td>
+        <td><%= vocabulary.confirmed %></td>
+        <td><%=l vocabulary.created_at %></td>
+        <td>
+          <%= link_to t('.edit', :default => t("helpers.links.edit")),
+                      edit_vocabulary_path(vocabulary), :class => 'btn btn-default btn-xs' %>
+          <%= link_to t('.destroy', :default => t("helpers.links.destroy")),
+                      vocabulary_path(vocabulary),
+                      :method => :delete,
+                      :data => { :confirm => t('.confirm', :default => t("helpers.links.confirm", :default => 'Are you sure?')) },
+                      :class => 'btn btn-xs btn-danger' %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<%= link_to t('.new', :default => t("helpers.links.new")),
+            new_vocabulary_path,
+            :class => 'btn btn-primary' %>
