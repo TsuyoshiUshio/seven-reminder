@@ -56,3 +56,5 @@ gem 'therubyracer'
 gem 'less-rails'
 gem 'twitter-bootstrap-rails'
 
+gem 'capistrano', '~> 3.3.0'
+
