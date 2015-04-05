@@ -1,0 +1,41 @@
+<%- model_class = Vocabulary -%>
+<div class="page-header">
+  <h1>Reminder</h1>
+
+</div>
+<span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+<div class="panel panel-default">
+    <div class="panel-heading">Remind view</div>
+    <div class="panel-body">Today, you are going to review these words. You don't need to memorize all of them. Just read these.</div>
+    <table class="table table-striped">
+      <thead>
+      <tr>
+        <th><%= model_class.human_attribute_name(:name) %></th>
+        <th><%= model_class.human_attribute_name(:definition) %></th>
+        <th><%= model_class.human_attribute_name(:example) %></th>
+        <th><%= model_class.human_attribute_name(:url) %></th>
+      </tr>
+      </thead>
+      <tbody>
+      <% @vocabularies.each do |vocabulary| %>
+          <tr>
+            <td style="width:20%"><%= vocabulary.name %><br/>
+
+              <span class="button-checkbox">
+        <button type="button" class="btn-sm" data-color="success">Reviewed</button>
+        <input type="checkbox" class="hidden"  />
+
+    </span></td>
+            <td style="width:35%"><%= vocabulary.definition %></td>
+            <td style="width:35%"><%= vocabulary.example %></td>
+            <td style="width:10%"><%= link_to "Site", vocabulary.url %></td>
+          </tr>
+      <% end %>
+      </tbody>
+    </table>
+</div>
+
+<%= link_to t('.new', :default => t("helpers.links.new")),
+            new_vocabulary_path,
+            :class => 'btn btn-primary' %>
+

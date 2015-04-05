@@ -10,8 +10,8 @@
       <th><%= model_class.human_attribute_name(:definition) %></th>
       <th><%= model_class.human_attribute_name(:example) %></th>
       <th><%= model_class.human_attribute_name(:url) %></th>
-      <th><%= model_class.human_attribute_name(:confirmed) %></th>
-      <th><%= model_class.human_attribute_name(:created_at) %></th>
+      <th>Valid</th>
+      <th>Date</th>
       <th><%=t '.actions', :default => t("helpers.actions") %></th>
     </tr>
   </thead>
@@ -22,9 +22,9 @@
         <td><%= vocabulary.name %></td>
         <td><%= vocabulary.definition %></td>
         <td><%= vocabulary.example %></td>
-        <td><%= vocabulary.url %></td>
+        <td><%= link_to "Site", vocabulary.url %></td>
         <td><%= vocabulary.confirmed %></td>
-        <td><%=l vocabulary.created_at %></td>
+        <td><%=l vocabulary.created_at.to_date %></td>
         <td>
           <%= link_to t('.edit', :default => t("helpers.links.edit")),
                       edit_vocabulary_path(vocabulary), :class => 'btn btn-default btn-xs' %>

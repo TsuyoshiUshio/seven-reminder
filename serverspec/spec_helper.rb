@@ -3,7 +3,7 @@ require "serverspec"
 
 set :backend, :docker
 set :docker_url, ENV["DOCKER_HOST"]
-set :docker_image, "serverspec_docker3"
+set :docker_image, "serverspec_docker"
 
 
 

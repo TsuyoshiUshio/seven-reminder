@@ -6,6 +6,11 @@ class VocabulariesController < ApplicationController
   def index
     @vocabularies = Vocabulary.all
   end
+  # GET /vocabularies/remind
+  # GET /vocabularies/ramind.json
+  def remind
+    @vocabularies = Vocabulary.all
+  end
 
   # GET /vocabularies/1
   # GET /vocabularies/1.json
