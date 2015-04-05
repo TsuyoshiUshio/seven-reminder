@@ -10,4 +10,5 @@ RSpec.describe VocabulariesController do
       expect(assigns(:vocabularies).size).to eq 2
     end
   end
+
 end

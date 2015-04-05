@@ -19,6 +19,8 @@ ActiveRecord::Schema.define(version: 20150405075736) do
     t.datetime "updated_at",    null: false
   end
 
+  add_index "reviews", ["vocabulary_id"], name: "index_reviews_on_vocabulary_id"
+
   create_table "vocabularies", force: :cascade do |t|
     t.string   "name"
     t.text     "definition"
