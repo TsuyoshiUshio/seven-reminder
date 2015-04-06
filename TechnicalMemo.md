@@ -279,5 +279,301 @@ history:seven-reminder ushio$ rake db:migrate
 
 ただし、このAPIにはリクエストを投げ放題なので、将来的には、認証の仕組みとかが入りそう。
 
+4. dockerコマンドの自動化
+---
+DockerをDockerMachineから使うとき、毎回evalをしないといけないので面倒なので、ワンコマンドで、Dockerがらみの環境変数を設定したかった。
+　当初はshell fileを作ったが、そこで環境変数をセットしても、子プロセスの中でセットされるだけなので、呼び出し元のシェルでは反映されない。そこで、aliasを使って、`.bash_profile`を次のようにした。
+　
+```
+function docker_enable { eval "$(docker-machine env $1)"; }
+export -f docker_enable
+```
+Shellでは、aliasとしてfunctionを定義できる様子。`$1`が引数を表す。
 
 
+5. Cucumberの実践
+---
+
+### 5.1. Cucumberを使って見る
+
+Cucumberは主にシナリオテストを実施するためのフレームワーク。Railsに組み込んで使える。
+cucumberは、Gemfileに次のように定義している。
+
+```
+group :development, :test do
+  gem 'rspec-rails', '~> 3.0'
+  gem 'cucumber-rails', :require => false
+  gem 'database_cleaner'
+end
+```
+
+この状態で、`rails g cucumber:install`で、`features`ディレクトリができる。featuresの中に、entry_vocabulary.featureというファイルを作成する。これは、RubyDSLを使った、自然言語でシナリオテストを定義するものだ。
+
+```
+Feature: Entry a vocabulary
+    In order to memorise this world
+    A user
+    Should entry a vocabulary by entry form
+
+  Scenario: Entry a vocabulary via Web Entry Page
+      Given I am on the new_vocabulary page
+      And I fill in "vocabulary name" with "yahoo"
+      And I fill in "vocabulary definition" with "when you are on the mountain, you'll shout this expression"
+      And I fill in "vocabulary example" with "Say yahoo!"
+      And I fill in "vocabulary url" with "http://www.yahoo.co.jp"
+      And I fill in "vocabulary confirmed" with "true"
+      When I press "Create Vocabulary"
+      Then page should have notice message "Vacabulary was successfully created."
+```
+
+ここで、実行したい場合は、
+
+```
+$ bundle exec cucumber
+```
+
+ただし、エラーが出る。DSLの中身を書いていないから。ご丁寧にDSLのコードの例を書いてくれる。
+
+```
+ry:seven-reminder ushio$ bundle exec cucumber
+Using the default profile...
+   : 略
+1 scenario (1 undefined)
+8 steps (8 undefined)
+0m0.013s
+
+You can implement step definitions for undefined steps with these snippets:
+
+Given(/^I am on entry page$/) do
+  pending # express the regexp above with the code you wish you had
+end
+
+Given(/^I fill in "(.*?)" with "(.*?)"$/) do |arg1, arg2|
+  pending # express the regexp above with the code you wish you had
+end
+
+When(/^I press "(.*?)"$/) do |arg1|
+  pending # express the regexp above with the code you wish you had
+end
+
+Then(/^page should have notice message "(.*?)"$/) do |arg1|
+  pending # express the regexp above with the code you wish you had
+end
+
+```
+
+ただし、自然言語なので、どんな書き方でもできるわけではない。これの定義は、features/step_definitions/navigation_steps.rbで定義されている。
+
+
+```
+require File.expand_path(File.join(File.dirname(__FILE__), "..", "support", "paths"))
+
+Given /^I am on (.+)$/ do |page_name|
+  visit path_to(page_name)
+end
+
+When /^I go to (.+)$/ do |page_name|
+  visit path_to(page_name)
+end
+
+When /^I press "([^\"]*)"$/ do |button|
+  click_button(button)
+end
+
+When /^I click "([^\"]*)"$/ do |link|
+  click_link(link)
+end
+
+When /^I fill in "([^\"]*)" with "([^\"]*)"$/ do |field, value|
+  fill_in(field.gsub(' ', '_'), :with => value)
+end
+
+When /^I fill in "([^\"]*)" for "([^\"]*)"$/ do |value, field|
+  fill_in(field.gsub(' ', '_'), :with => value)
+end
+
+When /^I fill in the following:$/ do |fields|
+  fields.rows_hash.each do |name, value|
+    When %{I fill in "#{name}" with "#{value}"}
+  end
+end
+
+When /^I select "([^\"]*)" from "([^\"]*)"$/ do |value, field|
+  select(value, :from => field)
+end
+
+When /^I check "([^\"]*)"$/ do |field|
+  check(field)
+end
+
+When /^I uncheck "([^\"]*)"$/ do |field|
+  uncheck(field)
+end
+
+When /^I choose "([^\"]*)"$/ do |field|
+  choose(field)
+end
+
+Then /^I should see "([^\"]*)"$/ do |text|
+  page.should have_content(text)
+end
+
+Then /^I should see \/([^\/]*)\/$/ do |regexp|
+  regexp = Regexp.new(regexp)
+  page.should have_content(regexp)
+end
+
+Then /^I should not see "([^\"]*)"$/ do |text|
+  page.should_not have_content(text)
+end
+
+Then /^I should not see \/([^\/]*)\/$/ do |regexp|
+  regexp = Regexp.new(regexp)
+  page.should_not have_content(regexp)
+end
+
+Then /^the "([^\"]*)" field should contain "([^\"]*)"$/ do |field, value|
+  find_field(field).value.should =~ /#{value}/
+end
+
+Then /^the "([^\"]*)" field should not contain "([^\"]*)"$/ do |field, value|
+  find_field(field).value.should_not =~ /#{value}/
+end
+
+Then /^the "([^\"]*)" checkbox should be checked$/ do |label|
+  find_field(label).should be_checked
+end
+
+Then /^the "([^\"]*)" checkbox should not be checked$/ do |label|
+  find_field(label).should_not be_checked
+end
+
+Then /^I should be on (.+)$/ do |page_name|
+  current_path.should == path_to(page_name)
+end
+
+Then /^page should have (.+) message "([^\"]*)"$/ do |type, text|
+  page.has_css?("p.#{type}", :text => text, :visible => true)
+end
+
+```
+
+上記のファイルや features/support/paths.rb
+
+```
+module NavigationHelpers
+  def path_to(page_name)
+    case page_name
+
+      when /the home\s?page/
+        '/'
+      else
+        begin
+          page_name =~ /the (.*) page/
+          path_components = $1.split(/\s+/)
+          self.send(path_components.push('path').join('_').to_sym)
+        rescue Object => e
+          raise "Can't find mapping from \"#{page_name}\" to a path.\n" +
+                    "Now, go and add a mapping in #{__FILE__}"
+        end
+    end
+  end
+end
+
+World(NavigationHelpers)
+```
+を見れば明白だが、ページ名の指定は、
+
+`Given I am on the new_vocabulary page`
+ 
+ なっているが、the とpageはカットされ、new_vocabularyがpage名になる。これはどこを見るかというと、`rake routes`コマンドを打つとわかる。
+ 
+ 
+```
+history:seven-reminder ushio$ rake routes
+         Prefix Verb   URI Pattern                      Controller#Action
+   vocabularies GET    /vocabularies(.:format)          vocabularies#index
+                POST   /vocabularies(.:format)          vocabularies#create
+ new_vocabulary GET    /vocabularies/new(.:format)      vocabularies#new
+edit_vocabulary GET    /vocabularies/:id/edit(.:format) vocabularies#edit
+     vocabulary GET    /vocabularies/:id(.:format)      vocabularies#show
+                PATCH  /vocabularies/:id(.:format)      vocabularies#update
+                PUT    /vocabularies/:id(.:format)      vocabularies#update
+                DELETE /vocabularies/:id(.:format)      vocabularies#destroy
+reminder_remind GET    /reminder/remind(.:format)       vocabularies#remind
+ reviews_create POST   /reviews/create(.:format)        reviews#create
+history:seven-reminder ushio$ 
+```
+
+尚、DSLの通り、フォームの部品の名前は`model名 項目名`になっている。
+
+実際のRailsだとerbで生成されるコードは次の通り
+
+```
+  <div class="control-group">
+    <label class="control-label" for="vocabulary_name">Name</label>
+    <div class="controls">
+      <input class="form-control" type="text" name="vocabulary[name]" id="vocabulary_name" />
+    </div>
+```
+
+ちゃんと、DSLと、featureを定義すると、テストが通る
+
+```
+Using the default profile...
+Feature: Entry a vocabulary
+    In order to memorise this world
+    A user
+    Should entry a vocabulary by entry form
+
+  Scenario: Entry a vocabulary via Web Entry Page                                                           # features/entry_vocabulary.feature:6
+    Given I am on the new_vocabulary page                                                                   # features/step_definitions/navigation_steps.rb:3
+    And I fill in "vocabulary name" with "yahoo"                                                            # features/step_definitions/navigation_steps.rb:19
+    And I fill in "vocabulary definition" with "when you are on the mountain, you'll shout this expression" # features/step_definitions/navigation_steps.rb:19
+    And I fill in "vocabulary example" with "Say yahoo!"                                                    # features/step_definitions/navigation_steps.rb:19
+    And I fill in "vocabulary url" with "http://www.yahoo.co.jp"                                            # features/step_definitions/navigation_steps.rb:19
+    And I fill in "vocabulary confirmed" with "true"                                                        # features/step_definitions/navigation_steps.rb:19
+    When I press "Create Vocabulary"                                                                        # features/step_definitions/navigation_steps.rb:11
+    Then page should have notice message "Vacabulary was successfully created."                             # features/step_definitions/navigation_steps.rb:87
+
+1 scenario (1 passed)
+8 steps (8 passed)
+0m0.233s
+```
+
+無事成功。
+
+参考 [Quick tutorial: Starting with Cucumber and Capybara – BDD on Rails project](http://loudcoding.com/posts/quick-tutorial-starting-with-cucumber-and-capybara-bdd-on-rails-project/)
+
+### 5.2. Cucumberの意義
+
+Cucumberはシナリオテストのフレームワークで、BDDのフレームワークになっている。自然言語的なDSLでシナリオをかけるのがポイント。
+
+```
+fill_in('First Name', :with => 'John')
+fill_in('Password', :with => 'Seekrit')
+fill_in('Description', :with => 'Really Long Text...')
+choose('A Radio Button')
+check('A Checkbox')
+uncheck('A Checkbox')
+attach_file('Image', '/path/to/image.jpg')
+select('Option', :from => 'Select Box')
+```
+
+Cucumberは、内部で[Capybara](https://github.com/jnicklas/capybara)を使っている。Capybaraはwebアクセスを行い、実際のユーザがブラウザで操作を行うかのようにテストをしてくれる。cucumber-railsでは組み込まれている。Capybara自体はcucumber意外にもRSpecやTest::Unitとも組み合わせが可能だ。
+
+Cucumberのwebテストのドライバは、デフォルトで、RackTestと呼ばれるrubyだけで書かれたフレームワークを使っている。ただし、これはJavascriptのテストができない。
+
+Javascriptを使ったテストの場合は、Seleniumを使う。実際には次の通り。
+Gemfileに`selenium-webdriver`を追加する。
+
+```
+Capybara.default_driver = :selenium
+```
+
+のようにセットすればよい。ただし、本来は `:rack_test`をデフォルトにするとよい。こちらの方が早いからだ。`:js => true`とか `@javascript`が要求されたときに切り替えるといい。
+`Capybara.javascript_driver`というのが使える。
+
+ただし、これは試していないので、実際試す必要があると思われる。
+
+以上 Happy Coding!
