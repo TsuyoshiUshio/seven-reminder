@@ -576,4 +576,51 @@ Capybara.default_driver = :selenium
 
 ただし、これは試していないので、実際試す必要があると思われる。
 
+6. Jenkinsのセットアップ
+---
+
+### 6.1. タイムゾーンの設定
+
+デフォルトでUSTになっているので、日本に設定を変更させる必要あり。コマンドレベルでは、以下の内容。
+
+```
+# Time Zone
+RUN cp -p /usr/share/zoneinfo/Asia/Tokyo /etc/localtime 
+RUN echo "Asia/Tokyo" > /etc/timezone
+```
+一般的な手順では、この後タイムサーバーと同期させる手順があるが次のエラーで失敗する。
+
+```
+$ ntpdate ntp1.jst.mfeed.ad.jp
+ntpdate[1337]: Can't adjust the time of day: Operation not permitted
+```
+これは、これが仮想サーバーであり、ntpclientのホストの設定を変える権限がないから。
+
+ちなみに手動だと次のコマンドを発行すると、対話形式でタイムゾーンが設定できる。
+dpkg-reconfigureは、すでにインストールしたパッケージの再設定をするコマンド
+
+```
+dpkg-reconfigure tzdata
+```
+
+### 6.2. Jenkinsのインストール後に、コンテナがすぐに停止する。
+
+これは当然なのだが、/etc/init.d/jenkins start などを実施しても、その後そのコマンドはすぐ終了
+するため、コンテナ自体が終了するから。次のような工夫をすると良い。
+
+```
+ENTRYPOINT etc/init.d/jenkins start &&\
+			sleep 5 &&\
+			tail -f /var/log/jenkins/jenkins.log
+```
+そして、
+
+```
+$ docker build -t seven-ci .
+$ docker run -d -p 8080:8080 seven-ci 
+```
+
+あとは、dockerの仮想マシンのIPアドレス+8080でJenkinsが起動しました。
+
+
 以上 Happy Coding!
