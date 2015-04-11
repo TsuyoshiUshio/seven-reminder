@@ -655,6 +655,126 @@ GitHubリポジトリを指定するとコードレビューしてくれる。
 
 ### 8.2. Jobを作成する
 
+実際にJobを作ってみたが、ビルドがこける。理由は下記の通り
+
+・bundlerが入っていない -> Dockerfileにたすべし
+・/usr/local/lib/ruby/gems, /usr/local/bin に書き込み権限がない
+
+コンテナ＆CIなので、gem installができないのは致命的なので、ここは２つの作戦がある
+
+・jenkinsユーザで動かすのをやめる
+・/usr/local/に対してjenkinsユーザが書き込み可能にする
+・とにかくパーミッション/usr/localに与えてしまう。
+・rubyを権限のあるところにインストールする
+
+労力節約のためにrubyのコンテナを使っているので、２番目のソリューションがよさそう。
+CI専用なので、それがいいだろう。 -> Dockerfile に記入すべし
+
+### 8.3. テストレポートと、カバレッジの記録
+
+上記の処置でJenkinsは動くようになったが、次はテストレポート、カバレッジも見えるようにしたい。
+
+Gemfileのtestのセクションに下記の記述を追加した。
+
+```
+  gem 'simplecov', :require => false
+  gem 'simplecov-rcov', :require => false
+  gem 'ci_reporter_rspec'
+```
+
+bunlde installを実施後に、幾つかのファイルに記述を追加した。
+
+
+Rakefileに次の行を追加。これで、rake specを実施すると、JUnit形式のレポートがspec/reportsに
+出力されるようになる。
+
+```
+require 'ci/reporter/rake/rspec'
+```
+
+```
+$ bundle exec rake ci:setup:rspec spec
+```
+
+の実行で、spec/reportsの下にJUnitレポート形式のxmlが出力された。
+
+
+また、spec/spec_helperの先頭に次の記述を追加。
+
+```
+require 'simplecov'
+require 'simplecov-rcov'
+SimpleCov.start 'rails'
+SimpleCov.formatter = SimpleCov::Formatter::RcovFormatter
+```
+
+これで、カバレッジの記述が完了。
+
+`bundle exec rake rspec`で、実際にカバレッジの結果が、`coverage/rconv`に出力される
+
+### 8.4. Jenkinsの設定
+
+Jenkinsの設定のポイントは以下の通り
+
+Source Code Managementは、Gitを選択して、gitのhttpsを記述
+
+Build > Execute shell 改善の余地は大いにあるが、現状はこれ
+
+```
+gem install bundler
+bundle install
+bundle exec rake db:create RAILS_ENV=test
+bundle exec rake db:migrate RAILS_ENV=test
+bundle exec rake ci:setup:rspec spec
+```
+
+cucumber/serverspecのテストケースもついかしたいところ
+
+
+Post build action
+
+Publish JUnit test result report
+
+Test report XMLs `**/spec/reports/*.xml`
+
+Publish Rcov report
+
+Rcov report directory `coverage/rcov`
+
+参考[Jenkins を使ってRailsプロジェクトでゴニョゴニョするまでの道のり その６](http://shmztko.hatenablog.com/entry/2013/02/08/144444)
+
+### 8.5 今日のぐぐり
+
+```
+gem 'rspec', :require => 'spec
+```
+[Bunlder](http://bundler.io/gemfile.html)
+
+requireの意味。
+
+日本語にすると、gemのメインファイルが、違う名前の場合
+
+```
+gem 'rspec', :require => 'spec'
+gem 'sqlite3'
+```
+
+require => false の場合、bunlderがそのgemを要求するのを防ぐ。ただし、そのgemはインストール
+されて、依存関係をメインテナンスする
+
+もう一つ。directoryのパーミッション変更を忘れた
+
+```
+$ chmod a+w -R /usr/local
+```
+
+実際は
+
+```
+$ chown -R jenkins /usr/local
+```
+
+とかの方がよいだろう。
 
 
 以上 Happy Coding!
