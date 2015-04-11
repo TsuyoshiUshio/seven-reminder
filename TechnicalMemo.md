@@ -623,4 +623,38 @@ $ docker run -d -p 8080:8080 seven-ci
 あとは、dockerの仮想マシンのIPアドレス+8080でJenkinsが起動しました。
 
 
+一旦寝たdocker-machine及びdockerコンテナの起動は下記の通り。docker startで、停止中のコンテナを再開できる
+
+```
+$ docker-machine ls
+$ docker-machine start seven-ci
+$ docker_enable seven-ci
+$ docker ps -a
+$ docker start <container name>
+```
+
+7. Code Climateのセットアップ
+
+Code Climateは、コードレビューのシステム。Ruby + Javascriptに対応している。
+Priceのところから、オープンソースは、無料というリンクがあるので、そこで、オープンソースの
+GitHubリポジトリを指定するとコードレビューしてくれる。
+
+[TsuyoshiUshio/simple-config](https://codeclimate.com/github/TsuyoshiUshio/simple-config/code)
+[TsuyoshiUshio/seven-reminder](https://codeclimate.com/github/TsuyoshiUshio/seven-reminder)
+
+
+8. Jenkinsのセットアップ
+
+### 8.1. 事前準備
+
+以下のプラグインを追加。画面操作で実施。（この後、Dockerfileで、コマンドラインからインストールするようにする。）
+
+* Git Plugin
+* GitHub Plugin
+* Ruby Metrics Plugin
+
+### 8.2. Jobを作成する
+
+
+
 以上 Happy Coding!

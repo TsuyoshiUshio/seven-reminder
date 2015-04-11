@@ -17,3 +17,6 @@
 /tmp
 
 .idea
+
+/coverage
+/spec/reports
