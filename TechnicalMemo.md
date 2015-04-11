@@ -777,4 +777,10 @@ $ chown -R jenkins /usr/local
 とかの方がよいだろう。
 
 
+最後に既存のnameコンテナにログイン
+
+```
+$ docker exec -it name bash
+``` 
+
 以上 Happy Coding!
