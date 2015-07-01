@@ -78,3 +78,6 @@ $ bundle exec rake db:migrate
 $ bundle exec rails server -b 0.0.0.0
 ```
 
+You can see sign in screen. You can enter your own e-mail/passowrd.
+like ushio@simplearchitect.com / ushio001
+

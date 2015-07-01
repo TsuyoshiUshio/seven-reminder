@@ -1,4 +1,6 @@
-<h1>Home#index</h1>
+<div class="page-header">
+<h1>Sign-in</h1>
+</div>
 <% if user_signed_in? %>
     Logged in as <strong><%= current_user.email %></strong>.
     <%= link_to "Settings", edit_user_registration_path, :class => "navbar-link" %> |

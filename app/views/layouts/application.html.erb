@@ -35,6 +35,15 @@
     <%= favicon_link_tag 'favicon.ico', :rel => 'shortcut icon' %>
 
     <%= javascript_include_tag "application" %>
+
+    <style type = "text/css">
+        #footer {
+            height: 40px;
+        }
+        #footer {
+            background-color: #f5f5f5;
+        }
+    </style>
   </head>
   <body>
 
@@ -60,12 +69,6 @@
       <div class="row">
         <div class="col-lg-9">
           <%= bootstrap_flash %>
-          <% if notice %>
-              <p class="alert alert-success"><%= notice %></p>
-          <% end %>
-          <% if alert %>
-              <p class="alert alert-danger"><%= alert %></p>
-          <% end %>
           <%= yield %>
         </div>
         <div class="col-lg-3">
@@ -81,11 +84,14 @@
         </div><!--/span-->
       </div><!--/row-->
 
-      <footer>
-        <p>&copy; SimpleArchitect and friends 2015</p>
-      </footer>
 
     </div> <!-- /container -->
+
+    <div id="footer">
+      <div class="container">
+        <p>&copy; SimpleArchitect and friends 2015</p>
+      </div>
+    </div>
 
   </body>
 </html>
