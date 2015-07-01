@@ -1,5 +1,5 @@
 Feature: Entry a vocabulary
-    In order to memorise this world
+    In order to memorise this word
     A user
     Should entry a vocabulary by entry form
 
