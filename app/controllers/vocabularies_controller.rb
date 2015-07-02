@@ -4,12 +4,12 @@ class VocabulariesController < ApplicationController
   # GET /vocabularies
   # GET /vocabularies.json
   def index
-    @vocabularies = Vocabulary.all
+    @vocabularies = Vocabulary.where(user_id: current_user.id)
   end
   # GET /vocabularies/remind
   # GET /vocabularies/ramind.json
   def remind
-    @vocabularies = Vocabulary.all
+    @vocabularies = Vocabulary.where(user_id: current_user.id)
   end
 
   # GET /vocabularies/1
@@ -74,6 +74,6 @@ class VocabulariesController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def vocabulary_params
-      params.require(:vocabulary).permit(:name, :definition, :example, :url, :confirmed)
+      params.require(:vocabulary).permit(:name, :definition, :example, :url, :confirmed, :user_id)
     end
 end
