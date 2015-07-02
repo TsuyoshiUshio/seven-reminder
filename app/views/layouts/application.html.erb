@@ -35,6 +35,15 @@
     <%= favicon_link_tag 'favicon.ico', :rel => 'shortcut icon' %>
 
     <%= javascript_include_tag "application" %>
+
+    <style type = "text/css">
+        #footer {
+            height: 40px;
+        }
+        #footer {
+            background-color: #f5f5f5;
+        }
+    </style>
   </head>
   <body>
 
@@ -51,6 +60,16 @@
             <li><%= link_to "Management", "/vocabularies"  %></li>
             <li><%= link_to "Reminder", "/reminder/remind"  %></li>
             <li><%= link_to "Analysis", "/path3"  %></li>
+          </ul>
+          <ul class="nav navbar-nav navbar-right">
+            <% if user_signed_in? %>
+                <li><span class="navbar-text"><%= current_user.email %></span></li>
+                <li><%= link_to edit_user_registration_path do %><span class="glyphicon glyphicon-cog"></span> Settings<% end %></li>
+                <li><%= link_to destroy_user_session_path, method: :delete, :class => "navbar-link" do %><span class="glyphicon glyphicon-log-out"></span> Logout<% end %></li>
+            <% else %>
+                <li><%= link_to new_user_registration_path, :class => "navbar-link" do %><span class="glyphicon glyphicon-user"></span> Sign Up<% end %></li>
+                <li><%= link_to new_user_session_path, :class => "navbar-link" do %><span class="glyphicon glyphicon-log-in"></span> Login<% end %></li>
+            <% end %>
           </ul>
         </div>
       </div>
@@ -75,11 +94,14 @@
         </div><!--/span-->
       </div><!--/row-->
 
-      <footer>
-        <p>&copy; SimpleArchitect and friends 2015</p>
-      </footer>
 
     </div> <!-- /container -->
+
+    <div id="footer">
+      <div class="container">
+        <p>&copy; SimpleArchitect and friends 2015</p>
+      </div>
+    </div>
 
   </body>
 </html>
