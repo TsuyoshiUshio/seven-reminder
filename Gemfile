@@ -55,7 +55,7 @@ group :development, :test do
   gem 'docker-api'
   gem 'simplecov', :require => false
   gem 'simplecov-rcov', :require => false
-  gem 'ci_reporter_rspec'
+  gem 'yarjuf'
 end
 
 gem 'therubyracer'
