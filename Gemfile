@@ -55,6 +55,8 @@ group :development, :test do
   gem 'docker-api'
   gem 'simplecov', :require => false
   gem 'simplecov-rcov', :require => false
+
+  gem 'simplecov-cobertura', :require => false
   gem 'yarjuf'
 end
 
