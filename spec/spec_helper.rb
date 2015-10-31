@@ -1,6 +1,7 @@
 require 'simplecov'
 require 'simplecov-rcov'
-require 'yarjuf'
+#require 'yarjuf'
+require 'rspec_junit_formatter'
 require 'simplecov-cobertura'
 SimpleCov.start 'rails'
 SimpleCov.formatter = SimpleCov::Formatter::CoberturaFormatter

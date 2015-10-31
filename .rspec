@@ -1,2 +1,2 @@
---color
---require spec_helper
+--format RspecJunitFormatter
+--out spec/reports/rspecs.xml

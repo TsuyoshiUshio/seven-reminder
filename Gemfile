@@ -57,7 +57,8 @@ group :development, :test do
   gem 'simplecov-rcov', :require => false
 
   gem 'simplecov-cobertura', :require => false
-  gem 'yarjuf'
+#  gem 'yarjuf'
+  gem 'rspec_junit_formatter'
 end
 
 gem 'therubyracer'

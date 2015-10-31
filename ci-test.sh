@@ -1,8 +1,8 @@
 #!/bin/bash
 
-bundle config build.nokogiri --use-system-libraries
 RAILS_ENV=test;bundle install
 RAILS_ENV=test;bundle exec rake db:create
 RAILS_ENV=test;bundle exec rake db:migrate
 rm -rf spec/reports
-RAILS_ENV=test;bundle exec rspec -f JUnit -o spec/reports/results.xml
+RAILS_ENV=test;bundle exec rake
+
