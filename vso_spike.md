@@ -81,3 +81,8 @@ Control panel > DefaultCollection > Agent queues > Roles > Agent Queue Administr
 
 セカンダリネームのパスワードは、ms userのパスワードが変わっても更新されないので注意。
 
+git httpsで使うときにパスワード保存
+
+[git を https 経由で使うときのパスワードを保存する](http://qiita.com/usamik26/items/c655abcaeee02ea59695)
+gitで毎回パスワード聞かれるのを回避ｗ git config credential.https://example.com  .username myusername  そしてgit config credential.helper wincred #devopsjp
+ちなみに先ほどのはWindowsクライアントの手順なので、Macの場合はgit config credential.helper cache 等
