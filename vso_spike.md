@@ -62,27 +62,32 @@ bundle config build.nokogiri --use-system-libraries
 99. Tips
 ---
 
-空ファイル.おなじみの方法
+### 空ファイル.おなじみの方法
 
 ```
 $ touch filename
 $ echo -n > filename
 ```
 
-VSOの新しいエージェントホストの設定。
+### VSOの新しいエージェントホストの設定。
 [HOL - Parts Unlimited MRP App Continuous Integration with Visual Studio Online Build](https://github.com/Microsoft/PartsUnlimitedMRP/blob/master/docs/HOL_Continuous-Integration-with-Visual-Studio-Online-Build/HOL_Continuous-Integration-with-Visual-Studio-Online-Build.md)
 
-VSOのGitHubインテグレーション
+### VSOのGitHubインテグレーション
 [GitHub with VSO](https://msdn.microsoft.com/en-us/Library/vs/alm/Build/github/index)
 
-Agentが403でアクセスできない -> 権限設定
+### Agentが403でアクセスできない -> 権限設定
 Control panel > DefaultCollection > Agent queues > Roles > Agent Queue Administrator
 にAgentを動かすユーザを追加する。ちなみにユーザには、セカンダリネームが必要
 
-セカンダリネームのパスワードは、ms userのパスワードが変わっても更新されないので注意。
+### セカンダリネームのパスワードは、ms userのパスワードが変わっても更新されないので注意。
 
-git httpsで使うときにパスワード保存
+### git httpsで使うときにパスワード保存
 
 [git を https 経由で使うときのパスワードを保存する](http://qiita.com/usamik26/items/c655abcaeee02ea59695)
 gitで毎回パスワード聞かれるのを回避ｗ git config credential.https://example.com  .username myusername  そしてgit config credential.helper wincred #devopsjp
 ちなみに先ほどのはWindowsクライアントの手順なので、Macの場合はgit config credential.helper cache 等
+
+### VSOのタスクが動作しない
+
+VSOのタスクは必ずしもPowerShell / Nodeの両方で動作するとは限ららない。[Microsoft/vso-agent-tasks](https://github.com/Microsoft/vso-agent-tasks)
+をみて、PowerShellとjsの両方があるか確認すること
